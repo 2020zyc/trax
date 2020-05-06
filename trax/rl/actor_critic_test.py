@@ -39,7 +39,7 @@ class ActorCriticTest(absltest.TestCase):
 
   def test_a2ctrainer_save_restore(self):
     """Check save and restore of A2C trainer."""
-    task = rl_task.RLTask('CartPole-v0', initial_trajectories=1,
+    task = rl_task.RLTask('CartPole-v0', initial_trajectories=0,
                           max_steps=20)
     body = lambda mode: tl.Serial(tl.Dense(64), tl.Relu())
     policy_model = functools.partial(models.Policy, body=body)
@@ -85,7 +85,7 @@ class ActorCriticTest(absltest.TestCase):
 
   def test_sanity_a2ctrainer_cartpole(self):
     """Test-runs a2c on cartpole."""
-    task = rl_task.RLTask('CartPole-v0', initial_trajectories=1,
+    task = rl_task.RLTask('CartPole-v0', initial_trajectories=0,
                           max_steps=2)
     body = lambda mode: tl.Serial(tl.Dense(64), tl.Relu())
     policy_model = functools.partial(models.Policy, body=body)
@@ -112,7 +112,7 @@ class ActorCriticTest(absltest.TestCase):
   def test_sanity_ppo_cartpole(self):
     """Run PPO and check whether it correctly runs for 2 epochs.s."""
     task = rl_task.RLTask(
-        'CartPole-v1', initial_trajectories=750, max_steps=200)
+        'CartPole-v1', initial_trajectories=0, max_steps=200)
 
     lr = lambda h: lr_schedules.MultifactorSchedule(  # pylint: disable=g-long-lambda
         h, constant=1e-3,

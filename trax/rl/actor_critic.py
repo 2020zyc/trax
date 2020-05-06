@@ -332,8 +332,11 @@ class AdvantageBasedActorCriticTrainer(ActorCriticTrainer):
     # using n_extra_steps, we need to trim the length to match.
     obs = trajectory.observations[:, :advantages.shape[1]]
     act = trajectory.actions[:, :advantages.shape[1]]
-    old_logps = trajectory.log_probs[:, :advantages.shape[1]]
     mask = trajectory.mask[:, :advantages.shape[1]]  # Mask to zero-out padding.
+    if 'log_probs' in trajectory.agent_info:
+      old_logps = trajectory.agent_info['log_probs'][:, :advantages.shape[1]]
+    else:
+      old_logps = jnp.zeros_like(advantages)
     # Shape checks to help debugging.
     if len(advantages.shape) != 2:
       raise ValueError('Advantages are expected to have shape ' +

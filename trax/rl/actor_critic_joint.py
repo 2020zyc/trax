@@ -172,7 +172,7 @@ class ActorCriticJointTrainer(rl_training.RLTrainer):
     pred = pred[0, -1, :]
     sample = self._policy_dist.sample(pred)
     log_prob = self._policy_dist.log_prob(pred, sample)
-    return (sample.copy(), log_prob.copy())
+    return (sample.copy(), {'log_probs': log_prob.copy()})
 
   def train_epoch(self):
     """Trains RL for one epoch."""
@@ -230,12 +230,16 @@ class PPOJointTrainer(ActorCriticJointTrainer):
     """Use the RLTask self._task to create inputs to the value model."""
     for np_trajectory in self._task.trajectory_batch_stream(
         self._batch_size, max_slice_length=self._max_slice_length, epochs=[-1]):
+      if 'log_probs' in np_trajectory.agent_info:
+        old_log_probs = np_trajectory.agent_info['log_probs']
+      else:
+        old_log_probs = jnp.zeros_like(np_trajectory.rewards)
       # Insert an extra depth dimension, so the target shape is consistent with
       # the network output shape.
       yield (np_trajectory.observations,         # Inputs to the value model.
              np_trajectory.returns[:, :, None],
              np_trajectory.actions,
-             np_trajectory.log_probs,
+             old_log_probs,
              np_trajectory.mask)
 
   @property
@@ -450,7 +454,7 @@ class A2CJointTrainer(ActorCriticJointTrainer):
       yield (np_trajectory.observations,         # Inputs to the value model.
              np_trajectory.returns[:, :, None],
              np_trajectory.actions,
-             np_trajectory.log_probs,
+             jnp.zeros_like(np_trajectory.mask),
              np_trajectory.mask)
 
   @property
