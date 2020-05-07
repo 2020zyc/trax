@@ -599,9 +599,8 @@ def cumprod(a, axis=None, dtype=None):
   if axis is None:
     a = ravel(a)
     axis = 0
-  if axis < 0:
-    axis += a.ndim
-  assert axis >= 0 and axis < a.ndim
+  elif axis < 0:
+    axis += tf.rank(a.data)
   return utils.tensor_to_ndarray(tf.math.cumprod(a.data, axis))
 
 
@@ -636,9 +635,8 @@ def cumsum(a, axis=None, dtype=None):
   if axis is None:
     a = ravel(a)
     axis = 0
-  if axis < 0:
-    axis += a.ndim
-  assert axis >= 0 and axis < a.ndim
+  elif axis < 0:
+    axis += tf.rank(a.data)
   return utils.tensor_to_ndarray(tf.cumsum(a.data, axis))
 
 

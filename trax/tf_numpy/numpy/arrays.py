@@ -32,6 +32,9 @@ def convert_to_tensor(value, dtype=None):
   if (dtype is None and isinstance(value, six.integer_types)
       and value >= 2 ** 63):
     dtype = tf.uint64
+  elif (dtype is None and isinstance(value, float) and
+        dtypes.is_allow_float64()):
+    dtype = tf.float64
   return tf.convert_to_tensor(value, dtype=dtype)
 
 
